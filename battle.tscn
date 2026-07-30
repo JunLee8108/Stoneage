@@ -1,110 +1,126 @@
-[gd_scene load_steps=2 format=3 uid="uid://cbattlescn2xn"]
+[gd_scene load_steps=3 format=3 uid="uid://cbattlescn2xn"]
 
 [ext_resource type="Script" uid="uid://dbattlegd8k2t" path="res://scripts/battle.gd" id="1_battle"]
+[ext_resource type="Texture2D" uid="uid://cstonefl2tx4m" path="res://assets/tiles/stone_floor.png" id="2_floor"]
 
 [node name="Battle" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_battle")
 
-[node name="Sky" type="ColorRect" parent="."]
+[node name="Floor" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.71, 0.84, 0.94, 1)
+texture = ExtResource("2_floor")
+stretch_mode = 1
 
-[node name="GroundRect" type="ColorRect" parent="."]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -220.0
-color = Color(0.47, 0.66, 0.35, 1)
+[node name="Units" type="Node2D" parent="."]
+y_sort_enabled = true
 
-[node name="AllySprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(170, 260)
+[node name="EnemySprite" type="AnimatedSprite2D" parent="Units"]
+position = Vector2(250, 130)
 scale = Vector2(2, 2)
 offset = Vector2(0, -26)
 
-[node name="EnemySprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(478, 200)
+[node name="AllySprite" type="AnimatedSprite2D" parent="Units"]
+position = Vector2(390, 250)
 scale = Vector2(2, 2)
 offset = Vector2(0, -26)
 
-[node name="EnemyPanel" type="PanelContainer" parent="."]
+[node name="EnemyInfo" type="PanelContainer" parent="."]
 offset_left = 12.0
-offset_top = 12.0
+offset_top = 10.0
 
-[node name="Margin" type="MarginContainer" parent="EnemyPanel"]
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
+[node name="Margin" type="MarginContainer" parent="EnemyInfo"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
 
-[node name="VBox" type="VBoxContainer" parent="EnemyPanel/Margin"]
-theme_override_constants/separation = 4
+[node name="VBox" type="VBoxContainer" parent="EnemyInfo/Margin"]
+theme_override_constants/separation = 3
 
-[node name="EnemyName" type="Label" parent="EnemyPanel/Margin/VBox"]
+[node name="EnemyName" type="Label" parent="EnemyInfo/Margin/VBox"]
 text = "야생 ??? Lv.?"
 
-[node name="EnemyHP" type="ProgressBar" parent="EnemyPanel/Margin/VBox"]
-custom_minimum_size = Vector2(160, 12)
+[node name="EnemyHP" type="ProgressBar" parent="EnemyInfo/Margin/VBox"]
+custom_minimum_size = Vector2(150, 10)
 show_percentage = false
 
-[node name="AllyPanel" type="PanelContainer" parent="."]
-offset_left = 448.0
-offset_top = 190.0
+[node name="AllyInfo" type="PanelContainer" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -76.0
+offset_bottom = -12.0
 
-[node name="Margin" type="MarginContainer" parent="AllyPanel"]
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
+[node name="Margin" type="MarginContainer" parent="AllyInfo"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
 
-[node name="VBox" type="VBoxContainer" parent="AllyPanel/Margin"]
-theme_override_constants/separation = 4
+[node name="VBox" type="VBoxContainer" parent="AllyInfo/Margin"]
+theme_override_constants/separation = 3
 
-[node name="AllyName" type="Label" parent="AllyPanel/Margin/VBox"]
+[node name="AllyName" type="Label" parent="AllyInfo/Margin/VBox"]
 text = "??? Lv.?"
 
-[node name="AllyHP" type="ProgressBar" parent="AllyPanel/Margin/VBox"]
-custom_minimum_size = Vector2(160, 12)
+[node name="AllyHP" type="ProgressBar" parent="AllyInfo/Margin/VBox"]
+custom_minimum_size = Vector2(150, 10)
 show_percentage = false
 
-[node name="AllyHPText" type="Label" parent="AllyPanel/Margin/VBox"]
+[node name="AllyHPText" type="Label" parent="AllyInfo/Margin/VBox"]
 text = "0 / 0"
 
-[node name="BottomPanel" type="PanelContainer" parent="."]
+[node name="LogPanel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_right = 220.0
+offset_top = 8.0
+
+[node name="Margin" type="MarginContainer" parent="LogPanel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="LogLabel" type="Label" parent="LogPanel/Margin"]
+horizontal_alignment = 1
+text = ""
+
+[node name="CommandPanel" type="PanelContainer" parent="."]
+anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -80.0
+offset_left = -136.0
+offset_top = -172.0
+offset_right = -12.0
+offset_bottom = -12.0
 
-[node name="Margin" type="MarginContainer" parent="BottomPanel"]
-theme_override_constants/margin_left = 12
+[node name="Margin" type="MarginContainer" parent="CommandPanel"]
+theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBox" type="VBoxContainer" parent="BottomPanel/Margin"]
+[node name="Commands" type="VBoxContainer" parent="CommandPanel/Margin"]
 theme_override_constants/separation = 6
 
-[node name="LogLabel" type="Label" parent="BottomPanel/Margin/VBox"]
-text = ""
-
-[node name="Commands" type="HBoxContainer" parent="BottomPanel/Margin/VBox"]
-theme_override_constants/separation = 10
-
-[node name="AttackButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
-custom_minimum_size = Vector2(100, 28)
+[node name="AttackButton" type="Button" parent="CommandPanel/Margin/Commands"]
+custom_minimum_size = Vector2(104, 30)
 text = "공격"
 
-[node name="SkillButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
-custom_minimum_size = Vector2(100, 28)
+[node name="SkillButton" type="Button" parent="CommandPanel/Margin/Commands"]
+custom_minimum_size = Vector2(104, 30)
 text = "스킬"
 
-[node name="CaptureButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
-custom_minimum_size = Vector2(100, 28)
+[node name="CaptureButton" type="Button" parent="CommandPanel/Margin/Commands"]
+custom_minimum_size = Vector2(104, 30)
 text = "포획"
 
-[node name="FleeButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
-custom_minimum_size = Vector2(100, 28)
+[node name="FleeButton" type="Button" parent="CommandPanel/Margin/Commands"]
+custom_minimum_size = Vector2(104, 30)
 text = "도망"

@@ -5,10 +5,15 @@ extends Control
 signal battle_finished(result: StringName)
 
 const LOG_DELAY := 0.7
+const SKILL_NAME := "송곳니 박기"
+const SKILL_MULT := 1.5
+const SKILL_USES_MAX := 3
+const EXP_PER_WIN := 10
 
 var ally: PetInstance
 var enemy: PetInstance
 var busy := true
+var skill_uses := SKILL_USES_MAX
 var log_delay := LOG_DELAY   # 테스트에서 짧게 조정 가능
 
 @onready var ally_sprite: AnimatedSprite2D = $AllySprite
@@ -45,8 +50,6 @@ func _ready() -> void:
 	skill_button.pressed.connect(_on_skill)
 	capture_button.pressed.connect(_on_capture)
 	flee_button.pressed.connect(_on_flee)
-	skill_button.disabled = true    # 다음 커밋에서 구현
-	capture_button.disabled = true  # 다음 커밋에서 구현
 
 	_update_hud()
 	_set_commands(false)
@@ -68,11 +71,30 @@ func _on_attack() -> void:
 
 
 func _on_skill() -> void:
-	pass  # 다음 커밋
+	if busy or skill_uses <= 0:
+		return
+	skill_uses -= 1
+	_run_round(&"skill")
 
 
 func _on_capture() -> void:
-	pass  # 다음 커밋
+	if busy:
+		return
+	busy = true
+	_set_commands(false)
+	_log("돌 포획틀을 던졌다!")
+	await _delay()
+	if randf() < capture_chance(enemy.hp_ratio()):
+		_log("야생 %s을(를) 포획했다! 동료가 되었다!" % enemy.display_name())
+		await _finish(&"capture")
+		return
+	_log("포획 실패! 야생 %s이(가) 빠져나왔다!" % enemy.display_name())
+	await _delay()
+	await _perform_attack(enemy, ally, 1.0)
+	if ally.current_hp <= 0:
+		await _handle_lose()
+		return
+	_open_command_phase()
 
 
 func _on_flee() -> void:
@@ -103,7 +125,8 @@ func _run_round(player_action: StringName) -> void:
 	if enemy.agility() > ally.agility():
 		steps.reverse()
 	for step in steps:
-		await _perform_attack(step[0], step[1], 1.0)
+		var is_skill: bool = step[2] == &"skill"
+		await _perform_attack(step[0], step[1], SKILL_MULT if is_skill else 1.0)
 		if enemy.current_hp <= 0:
 			await _handle_win()
 			return
@@ -116,13 +139,24 @@ func _run_round(player_action: StringName) -> void:
 func _perform_attack(attacker: PetInstance, defender: PetInstance, mult: float) -> void:
 	var dmg := calc_damage(attacker, defender, mult)
 	defender.current_hp = maxi(0, defender.current_hp - dmg)
-	_log("%s의 공격! %s에게 %d 데미지!" % [_name_of(attacker), _name_of(defender), dmg])
+	if mult > 1.0:
+		_log("%s의 %s! %s에게 %d 데미지!" % [_name_of(attacker), SKILL_NAME, _name_of(defender), dmg])
+	else:
+		_log("%s의 공격! %s에게 %d 데미지!" % [_name_of(attacker), _name_of(defender), dmg])
 	_update_hud()
 	await _delay()
 
 
 func _handle_win() -> void:
 	_log("야생 %s을(를) 쓰러뜨렸다!" % enemy.display_name())
+	await _delay()
+	var before_level := ally.level
+	ally.gain_exp(EXP_PER_WIN)
+	_log("%s은(는) 경험치 %d을(를) 얻었다!" % [ally.display_name(), EXP_PER_WIN])
+	if ally.level > before_level:
+		await _delay()
+		_update_hud_full()
+		_log("%s은(는) 레벨 %d이(가) 되었다!" % [ally.display_name(), ally.level])
 	await _finish(&"win")
 
 
@@ -149,6 +183,11 @@ static func flee_chance(my_agility: int, enemy_agility: int) -> float:
 	return clampf(0.5 + float(my_agility - enemy_agility) * 0.04, 0.25, 0.9)
 
 
+## 남은 HP 비율이 낮을수록 잡기 쉽다. 풀피 약 21%, 빈사 최대 85%.
+static func capture_chance(hp_ratio: float) -> float:
+	return clampf(0.85 * (1.0 - 0.75 * hp_ratio), 0.05, 0.95)
+
+
 # --- UI ---
 
 func _open_command_phase() -> void:
@@ -159,13 +198,23 @@ func _open_command_phase() -> void:
 
 func _set_commands(enabled: bool) -> void:
 	attack_button.disabled = not enabled
+	skill_button.disabled = not enabled or skill_uses <= 0
+	capture_button.disabled = not enabled
 	flee_button.disabled = not enabled
+	skill_button.text = "스킬 (%d)" % skill_uses
 
 
 func _update_hud() -> void:
 	ally_hp_bar.value = ally.current_hp
 	enemy_hp_bar.value = enemy.current_hp
 	ally_hp_text.text = "%d / %d" % [ally.current_hp, ally.max_hp()]
+
+
+## 레벨업 등으로 최대치가 변했을 때 전체 갱신.
+func _update_hud_full() -> void:
+	ally_name.text = "%s Lv.%d" % [ally.display_name(), ally.level]
+	ally_hp_bar.max_value = ally.max_hp()
+	_update_hud()
 
 
 func _log(text: String) -> void:

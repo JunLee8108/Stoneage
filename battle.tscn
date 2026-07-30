@@ -1,0 +1,110 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbattlescn2xn"]
+
+[ext_resource type="Script" uid="uid://dbattlegd8k2t" path="res://scripts/battle.gd" id="1_battle"]
+
+[node name="Battle" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_battle")
+
+[node name="Sky" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.71, 0.84, 0.94, 1)
+
+[node name="GroundRect" type="ColorRect" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -220.0
+color = Color(0.47, 0.66, 0.35, 1)
+
+[node name="AllySprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(170, 260)
+scale = Vector2(2, 2)
+offset = Vector2(0, -26)
+
+[node name="EnemySprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(478, 200)
+scale = Vector2(2, 2)
+offset = Vector2(0, -26)
+
+[node name="EnemyPanel" type="PanelContainer" parent="."]
+offset_left = 12.0
+offset_top = 12.0
+
+[node name="Margin" type="MarginContainer" parent="EnemyPanel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="EnemyPanel/Margin"]
+theme_override_constants/separation = 4
+
+[node name="EnemyName" type="Label" parent="EnemyPanel/Margin/VBox"]
+text = "야생 ??? Lv.?"
+
+[node name="EnemyHP" type="ProgressBar" parent="EnemyPanel/Margin/VBox"]
+custom_minimum_size = Vector2(160, 12)
+show_percentage = false
+
+[node name="AllyPanel" type="PanelContainer" parent="."]
+offset_left = 448.0
+offset_top = 190.0
+
+[node name="Margin" type="MarginContainer" parent="AllyPanel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="AllyPanel/Margin"]
+theme_override_constants/separation = 4
+
+[node name="AllyName" type="Label" parent="AllyPanel/Margin/VBox"]
+text = "??? Lv.?"
+
+[node name="AllyHP" type="ProgressBar" parent="AllyPanel/Margin/VBox"]
+custom_minimum_size = Vector2(160, 12)
+show_percentage = false
+
+[node name="AllyHPText" type="Label" parent="AllyPanel/Margin/VBox"]
+text = "0 / 0"
+
+[node name="BottomPanel" type="PanelContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -80.0
+
+[node name="Margin" type="MarginContainer" parent="BottomPanel"]
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="BottomPanel/Margin"]
+theme_override_constants/separation = 6
+
+[node name="LogLabel" type="Label" parent="BottomPanel/Margin/VBox"]
+text = ""
+
+[node name="Commands" type="HBoxContainer" parent="BottomPanel/Margin/VBox"]
+theme_override_constants/separation = 10
+
+[node name="AttackButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
+custom_minimum_size = Vector2(100, 28)
+text = "공격"
+
+[node name="SkillButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
+custom_minimum_size = Vector2(100, 28)
+text = "스킬"
+
+[node name="CaptureButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
+custom_minimum_size = Vector2(100, 28)
+text = "포획"
+
+[node name="FleeButton" type="Button" parent="BottomPanel/Margin/VBox/Commands"]
+custom_minimum_size = Vector2(100, 28)
+text = "도망"

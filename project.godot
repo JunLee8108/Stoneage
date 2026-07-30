@@ -24,6 +24,10 @@ window/size/window_height_override=720
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 
+[gui]
+
+theme/custom="res://theme/main_theme.tres"
+
 [input]
 
 move_up={

@@ -16,18 +16,18 @@ var busy := true
 var skill_uses := SKILL_USES_MAX
 var log_delay := LOG_DELAY   # 테스트에서 짧게 조정 가능
 
-@onready var ally_sprite: AnimatedSprite2D = $AllySprite
-@onready var enemy_sprite: AnimatedSprite2D = $EnemySprite
-@onready var ally_name: Label = $AllyPanel/Margin/VBox/AllyName
-@onready var ally_hp_bar: ProgressBar = $AllyPanel/Margin/VBox/AllyHP
-@onready var ally_hp_text: Label = $AllyPanel/Margin/VBox/AllyHPText
-@onready var enemy_name: Label = $EnemyPanel/Margin/VBox/EnemyName
-@onready var enemy_hp_bar: ProgressBar = $EnemyPanel/Margin/VBox/EnemyHP
-@onready var log_label: Label = $BottomPanel/Margin/VBox/LogLabel
-@onready var attack_button: Button = $BottomPanel/Margin/VBox/Commands/AttackButton
-@onready var skill_button: Button = $BottomPanel/Margin/VBox/Commands/SkillButton
-@onready var capture_button: Button = $BottomPanel/Margin/VBox/Commands/CaptureButton
-@onready var flee_button: Button = $BottomPanel/Margin/VBox/Commands/FleeButton
+@onready var ally_sprite: AnimatedSprite2D = $Units/AllySprite
+@onready var enemy_sprite: AnimatedSprite2D = $Units/EnemySprite
+@onready var ally_name: Label = $AllyInfo/Margin/VBox/AllyName
+@onready var ally_hp_bar: ProgressBar = $AllyInfo/Margin/VBox/AllyHP
+@onready var ally_hp_text: Label = $AllyInfo/Margin/VBox/AllyHPText
+@onready var enemy_name: Label = $EnemyInfo/Margin/VBox/EnemyName
+@onready var enemy_hp_bar: ProgressBar = $EnemyInfo/Margin/VBox/EnemyHP
+@onready var log_label: Label = $LogPanel/Margin/LogLabel
+@onready var attack_button: Button = $CommandPanel/Margin/Commands/AttackButton
+@onready var skill_button: Button = $CommandPanel/Margin/Commands/SkillButton
+@onready var capture_button: Button = $CommandPanel/Margin/Commands/CaptureButton
+@onready var flee_button: Button = $CommandPanel/Margin/Commands/FleeButton
 
 
 func _ready() -> void:
@@ -36,10 +36,11 @@ func _ready() -> void:
 	if enemy == null:  # 씬 단독 실행(F6) 대비
 		enemy = PetInstance.new(ally.species, 2)
 
+	# 탑다운 아레나: 아군은 우하단에서 등 보이게(↑), 야생은 좌상단에서 이쪽 보게(↓)
 	ally_sprite.sprite_frames = ally.species.walk_frames
-	ally_sprite.play("walk_right")
+	_stand(ally_sprite, &"walk_up")
 	enemy_sprite.sprite_frames = enemy.species.walk_frames
-	enemy_sprite.play("walk_left")
+	_stand(enemy_sprite, &"walk_down")
 
 	ally_name.text = "%s Lv.%d" % [ally.display_name(), ally.level]
 	enemy_name.text = "%s Lv.%d" % [_name_of(enemy), enemy.level]
@@ -143,8 +144,56 @@ func _perform_attack(attacker: PetInstance, defender: PetInstance, mult: float) 
 		_log("%s의 %s! %s에게 %d 데미지!" % [_name_of(attacker), SKILL_NAME, _name_of(defender), dmg])
 	else:
 		_log("%s의 공격! %s에게 %d 데미지!" % [_name_of(attacker), _name_of(defender), dmg])
+	await _animate_charge(_sprite_of(attacker), _sprite_of(defender), dmg)
 	_update_hud()
 	await _delay()
+
+
+func _sprite_of(pet: PetInstance) -> AnimatedSprite2D:
+	return ally_sprite if pet == ally else enemy_sprite
+
+
+## 원작식 돌진 타격: 대상에게 달려가 → 타격(점멸+데미지 팝업) → 제자리 복귀.
+func _animate_charge(att_sprite: AnimatedSprite2D, def_sprite: AnimatedSprite2D, dmg: int) -> void:
+	var origin := att_sprite.position
+	var strike_pos := def_sprite.position + (origin - def_sprite.position).normalized() * 42.0
+	att_sprite.play()
+	var go := create_tween()
+	go.tween_property(att_sprite, "position", strike_pos, 0.22) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	await go.finished
+	_spawn_damage_popup(def_sprite.position, dmg)
+	var flash := create_tween()
+	flash.tween_property(def_sprite, "modulate", Color(1.0, 0.45, 0.45), 0.06)
+	flash.tween_property(def_sprite, "modulate", Color.WHITE, 0.12)
+	var back := create_tween()
+	back.tween_property(att_sprite, "position", origin, 0.22) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await back.finished
+	_stand(att_sprite, att_sprite.animation)
+
+
+func _spawn_damage_popup(unit_pos: Vector2, dmg: int) -> void:
+	var label := Label.new()
+	label.text = str(dmg)
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color(1.0, 0.92, 0.25))
+	label.add_theme_color_override("font_outline_color", Color(0.25, 0.12, 0.0))
+	label.add_theme_constant_override("outline_size", 5)
+	label.position = unit_pos + Vector2(-12, -118)
+	label.z_index = 10
+	add_child(label)
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(label, "position:y", label.position.y - 30.0, 0.7)
+	tw.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(0.25)
+	tw.chain().tween_callback(label.queue_free)
+
+
+func _stand(sprite: AnimatedSprite2D, anim: StringName) -> void:
+	sprite.animation = anim
+	sprite.stop()
+	sprite.frame = 0
 
 
 func _handle_win() -> void:

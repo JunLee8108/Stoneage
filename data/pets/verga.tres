@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PetSpecies" load_steps=3 format=3 uid="uid://cvgadata5xm3e"]
+
+[ext_resource type="Script" uid="uid://dpetspec4mk2t" path="res://scripts/pet_species.gd" id="1_species"]
+[ext_resource type="SpriteFrames" uid="uid://dvgafrm5s2kt3" path="res://assets/sprites/pets/verga_frames.tres" id="2_frames"]
+
+[resource]
+script = ExtResource("1_species")
+id = &"verga"
+display_name = "베르가"
+element = 0
+base_hp = 55
+base_attack = 14
+base_defense = 8
+base_agility = 11
+growth_hp = 6.0
+growth_attack = 2.2
+growth_defense = 1.1
+growth_agility = 1.4
+walk_frames = ExtResource("2_frames")

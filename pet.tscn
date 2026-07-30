@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://dpetscn8vq2xn"]
+
+[ext_resource type="Script" uid="uid://cpetfolw7mk2t" path="res://scripts/pet_follower.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cvgadata5xm3e" path="res://data/pets/verga.tres" id="2_species"]
+[ext_resource type="SpriteFrames" uid="uid://dvgafrm5s2kt3" path="res://assets/sprites/pets/verga_frames.tres" id="3_frames"]
+
+[node name="Pet" type="Node2D"]
+script = ExtResource("1_script")
+species = ExtResource("2_species")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+offset = Vector2(0, -26)
+sprite_frames = ExtResource("3_frames")
+animation = &"walk_down"

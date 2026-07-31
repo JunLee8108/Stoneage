@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpetmenu7x2kt"]
+
+[ext_resource type="Script" uid="uid://dpetmenugd2kt" path="res://scripts/pet_menu.gd" id="1_menu"]
+
+[node name="PetMenu" type="CanvasLayer"]
+process_mode = 2
+visible = false
+script = ExtResource("1_menu")
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 130.0
+offset_top = 56.0
+offset_right = 510.0
+offset_bottom = 130.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+text = "펫 목록 - 선택하면 출전 (P/ESC: 닫기)"
+
+[node name="Rows" type="VBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 4

@@ -53,7 +53,9 @@ func active_pet() -> PetInstance:
 
 
 func begin_wild_battle() -> void:
-	pending_wild = PetInstance.new(species_registry.get(&"verga"), randi_range(2, 4))
+	var ids := species_registry.keys()
+	var species: PetSpecies = species_registry[ids[randi() % ids.size()]]
+	pending_wild = PetInstance.new(species, randi_range(2, 4))
 	if scene_transitions_enabled:
 		get_tree().change_scene_to_file(BATTLE_SCENE)
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PetSpecies" load_steps=3 format=3 uid="uid://dmurudata4xm3"]
+
+[ext_resource type="Script" uid="uid://dpetspec4mk2t" path="res://scripts/pet_species.gd" id="1_species"]
+[ext_resource type="SpriteFrames" uid="uid://cmurufrm3s2kt" path="res://assets/sprites/pets/muru_frames.tres" id="2_frames"]
+
+[resource]
+script = ExtResource("1_species")
+id = &"muru"
+display_name = "무루"
+element = 1
+base_hp = 62
+base_attack = 10
+base_defense = 14
+base_agility = 9
+growth_hp = 7.0
+growth_attack = 1.5
+growth_defense = 2.2
+growth_agility = 1.1
+walk_frames = ExtResource("2_frames")

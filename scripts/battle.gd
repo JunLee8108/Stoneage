@@ -42,8 +42,10 @@ func _ready() -> void:
 	enemy_sprite.sprite_frames = enemy.species.walk_frames
 	_stand(enemy_sprite, &"walk_down")
 
-	ally_name.text = "%s Lv.%d" % [ally.display_name(), ally.level]
-	enemy_name.text = "%s Lv.%d" % [_name_of(enemy), enemy.level]
+	ally_name.text = "%s Lv.%d (%s)" % [
+		ally.display_name(), ally.level, PetSpecies.element_name(ally.species.element)]
+	enemy_name.text = "%s Lv.%d (%s)" % [
+		_name_of(enemy), enemy.level, PetSpecies.element_name(enemy.species.element)]
 	ally_hp_bar.max_value = ally.max_hp()
 	enemy_hp_bar.max_value = enemy.max_hp()
 
@@ -140,10 +142,18 @@ func _run_round(player_action: StringName) -> void:
 func _perform_attack(attacker: PetInstance, defender: PetInstance, mult: float) -> void:
 	var dmg := calc_damage(attacker, defender, mult)
 	defender.current_hp = maxi(0, defender.current_hp - dmg)
+	var text := ""
 	if mult > 1.0:
-		_log("%s의 %s! %s에게 %d 데미지!" % [_name_of(attacker), SKILL_NAME, _name_of(defender), dmg])
+		text = "%s의 %s! %s에게 %d 데미지!" % [_name_of(attacker), SKILL_NAME, _name_of(defender), dmg]
 	else:
-		_log("%s의 공격! %s에게 %d 데미지!" % [_name_of(attacker), _name_of(defender), dmg])
+		text = "%s의 공격! %s에게 %d 데미지!" % [_name_of(attacker), _name_of(defender), dmg]
+	var element_mult := PetSpecies.element_multiplier(
+		attacker.species.element, defender.species.element)
+	if element_mult > 1.0:
+		text += " 효과가 굉장했다!"
+	elif element_mult < 1.0:
+		text += " 효과가 별로였다..."
+	_log(text)
 	await _animate_charge(_sprite_of(attacker), _sprite_of(defender), dmg)
 	_update_hud()
 	await _delay()
@@ -223,7 +233,9 @@ func _finish(result: StringName) -> void:
 # --- 규칙 (테스트에서 직접 검증) ---
 
 static func calc_damage(attacker: PetInstance, defender: PetInstance, mult: float) -> int:
-	var raw := float(attacker.attack()) * randf_range(0.85, 1.15) * mult \
+	var element_mult := PetSpecies.element_multiplier(
+		attacker.species.element, defender.species.element)
+	var raw := float(attacker.attack()) * randf_range(0.85, 1.15) * mult * element_mult \
 		- float(defender.defense()) * 0.5
 	return maxi(1, int(raw))
 

@@ -4,13 +4,6 @@ extends CanvasLayer
 
 signal active_changed
 
-const ELEMENT_NAMES := {
-	PetSpecies.Element.EARTH: "지",
-	PetSpecies.Element.WATER: "수",
-	PetSpecies.Element.FIRE: "화",
-	PetSpecies.Element.WIND: "풍",
-}
-
 @onready var rows_box: VBoxContainer = $Panel/Margin/VBox/Rows
 
 
@@ -48,7 +41,7 @@ func _rebuild() -> void:
 		row.text = "%s%s  Lv.%d  HP %d/%d  (%s)" % [
 			marker, pet.display_name(), pet.level,
 			pet.current_hp, pet.max_hp(),
-			ELEMENT_NAMES.get(pet.species.element, "?"),
+			PetSpecies.element_name(pet.species.element),
 		]
 		row.pressed.connect(_on_row_pressed.bind(i))
 		rows_box.add_child(row)

@@ -9,6 +9,7 @@ const ENCOUNTER_CHANCE := 0.12
 @onready var ground: TileMapLayer = $Ground
 @onready var player: CharacterBody2D = $Player
 @onready var pet: Node2D = $Pet
+@onready var pet_menu: CanvasLayer = $PetMenu
 
 var _last_tile := Vector2i(-9999, -9999)
 
@@ -16,6 +17,21 @@ func _ready() -> void:
 	player.global_position = GameState.player_field_position
 	pet.global_position = player.global_position + Vector2(-36, 0)
 	_last_tile = _player_tile()
+	_sync_follower_species()
+	pet_menu.active_changed.connect(_sync_follower_species)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("open_pets") and not get_tree().paused:
+		pet_menu.open()
+		get_viewport().set_input_as_handled()
+
+
+## 필드 동행 펫 외형을 출전 펫과 일치시킨다.
+func _sync_follower_species() -> void:
+	var active: PetInstance = GameState.active_pet()
+	if active:
+		pet.set_species(active.species)
 
 
 func _physics_process(_delta: float) -> void:

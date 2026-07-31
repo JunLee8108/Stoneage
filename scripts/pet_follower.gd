@@ -13,7 +13,13 @@ const SPEED := 90.0             # 플레이어(80)보다 살짝 빨라야 안 �
 var facing := "down"
 
 func _ready() -> void:
-	if species and species.walk_frames:
+	set_species(species)
+
+
+## 출전 펫 교체 시 외형 갱신용.
+func set_species(new_species: PetSpecies) -> void:
+	species = new_species
+	if species and species.walk_frames and sprite:
 		sprite.sprite_frames = species.walk_frames
 
 

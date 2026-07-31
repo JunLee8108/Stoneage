@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cvvs2tewt4d51"]
+[gd_scene load_steps=6 format=3 uid="uid://cvvs2tewt4d51"]
 
 [ext_resource type="Script" uid="uid://bfieldgd5mk2t" path="res://scripts/field.gd" id="1_field"]
 [ext_resource type="TileSet" uid="uid://dg5wq1nbveh3o" path="res://assets/tiles/grass_tileset.tres" id="1_tileset"]
 [ext_resource type="PackedScene" uid="uid://b7ju6smfq2xnd" path="res://player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://dpetscn8vq2xn" path="res://pet.tscn" id="3_pet"]
+[ext_resource type="PackedScene" uid="uid://bpetmenu7x2kt" path="res://pet_menu.tscn" id="4_menu"]
 
 [node name="Field" type="Node2D"]
 y_sort_enabled = true
@@ -19,3 +20,5 @@ position = Vector2(320, 176)
 [node name="Pet" parent="." instance=ExtResource("3_pet") node_paths=PackedStringArray("target")]
 position = Vector2(284, 176)
 target = NodePath("../Player")
+
+[node name="PetMenu" parent="." instance=ExtResource("4_menu")]
